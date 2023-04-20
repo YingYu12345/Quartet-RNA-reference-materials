@@ -1,24 +1,14 @@
-############################################
-######### QC  
+source("library.R")
+source("func_snrdb.R")
 
-setwd("C:/Users/ingri/Documents/working/quartet/quartet_20200503/RNA/RNA_revision_20230327/")
-source("C:/Users/ingri/Documents/working/quartet/quartet_20200503/RNA/RNA_revision_20230327/script/1_preprocess/library.R")
-source("C:/Users/ingri/Documents/working/quartet/quartet_20200503/RNA/RNA_revision_20230327/script/1_preprocess/color_theme.R")
-
-source("script/func/func_snrdb_2023.R")
-
-
-######import data
-logexpr<-readRDS("C:/Users/ingri/Documents/working/quartet/quartet_20200503/RNA/RNA_revision_20230327/expr_mat/alldetect_logFPKM_f001_r29433c252_20230407.rds")
+logexpr<-readRDS("exprMat_log2FPKM.rds")
 
 meta<-readRDS("data/metaQ_r252_20230406.rds")
 
 ubatch<-unique(as.character(meta$batch))
 usample<-as.character(unique(meta$sample))
 
-samplepair<-readRDS("expr_mat/samplepairs_r526_20230410.rds")
-
-
+samplepair<-readRDS("samplepairs_r526.rds")
 
 ################calculate SNRs 
 
@@ -68,26 +58,6 @@ print(s)
   
 } 
 
-
-
-saveRDS(samplepair,"expr_mat/6c_refN_SNR_20230410.rds")
-
-
-
-
-
-
-#########test
-
-library(ggplot2)
-
-ggplot(samplepair,aes(x=group,y=SNR,fill=as.factor(n_sample)))+
-  geom_boxplot()+
-  theme_bw()+
-  mytheme12+
-  facet_grid(.~n_sample,scales="free_x",space="free")+
-  theme(axis.text.x = element_text(angle = 90))
-
-
+saveRDS(samplepair,"6c_refN_SNR_20230410.rds")
 
 
