@@ -9,10 +9,10 @@ pvalue<-function(x,group){
 
 ####################import data
 
-logexpr<-readRDS()
-ratioexpr<-readRDS()
+logexpr<-readRDS("exprMat_log2FPKM.rds")
+ratioexpr<-readRDS("ratioD6.rds")
 
-meta<-readRDS()
+meta<-read.csv("meta_data.csv")
 
 sample_combn<-data.frame(
   sampleA=rep("D6",3),
