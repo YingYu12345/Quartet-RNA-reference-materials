@@ -2,18 +2,14 @@
 source("library.R")
 source("func_snrdb.R")
 
-####################import data
+
 logexpr<-readRDS("exprMat_log2FPKM.rds")
 
-meta<-readRDS("data/meta.rds")
+meta<-read.csv("meta_data.csv")
 
 ubatch<-unique(as.character(meta$batch))
 
-expdgene<-readRDS("expr_mat/detect_genelist.rds")
-expdgene1<-expdgene
 
-
-########
 pcs_all<-c()
 snr_table<-c()
 for ( i in 1:length(ubatch)){
@@ -54,7 +50,7 @@ for ( i in 1:length(ubatch)){
 }
 
 
-saveRDS(pcs_all,"expr_mat/intra_PCA.rds")
+saveRDS(pcs_all,"intra_PCA.rds")
 
 
 
