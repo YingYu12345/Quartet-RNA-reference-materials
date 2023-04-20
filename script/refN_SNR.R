@@ -58,6 +58,4 @@ print(s)
   
 } 
 
-saveRDS(samplepair,"6c_refN_SNR_20230410.rds")
-
 
