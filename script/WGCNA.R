@@ -1,11 +1,8 @@
 ####################WGCNA
 
-
-setwd("C:/Users/ingri/Documents/working/quartet/quartet_20200503/RNA/RNA_revision_20230327/")
-source("C:/Users/ingri/Documents/working/quartet/quartet_20200503/RNA/RNA_revision_20230327/script/1_preprocess/library.R")
-source("C:/Users/ingri/Documents/working/quartet/quartet_20200503/RNA/RNA_revision_20230327/script/1_preprocess/color_theme.R")
-
-source("script/func/func_snrdb_2023.R")
+source("library.R")
+source("color_theme.R")
+source("func_snrdb.R")
 
 
 
@@ -27,33 +24,23 @@ pastetogether<-function(x){
 }
 
 
-##########import=====================================================
-
-
 ##meta
 
-meta<-readRDS("data/metaQ_r252_20230406.rds")
+meta<-readRDS("meta_data.csv")
 
 ubatch<-unique(as.character(meta$batch))
 usample<-as.character(unique(meta$sample))
 
 #######expr
-ratio_D6<-readRDS("data/exprMat_RatioD6_r58395c252_20210701.rds")
+ratio_D6<-readRDS("ratioD6.rds")
 
 
 
 ## batch &name
-passbatch<-readRDS("expr_mat/3a_passbatch_13.rds")
+
 name<-as.character(meta$library[meta$batch %in% passbatch])
 
-expdgene<-readRDS("expr_mat/detect_genelist_20230406.rds")
 expdgene1<-expdgene[expdgene$Num>1,]
-
-
-##################################################################
-#######################ref detect genes
-###################### detected== all 13 batches
-####################################################################
 expdgene1_p<-expdgene1[expdgene1$batch %in% passbatch,]
 
 usample<-unique(as.character(meta$sample))
@@ -86,8 +73,6 @@ exp<-ratio_D6[rownames(ratio_D6) %in% gg,colnames(ratio_D6)%in% name]
 
 exp<-exp[head(order(apply(exp,1,sd),decreasing = T),10000),]
 
-saveRDS(exp,"expr_mat/5a_WGCNA_relative/ratioexp_WGCNA_r10000c156_20230411.rds")
-
 meta_f<-meta[match(name,meta$library),]
 
 
@@ -105,15 +90,7 @@ meta_f<-meta[match(name,meta$library),]
     datTraits[,i]<-as.numeric(as.factor(datTraits[,i]))
   }
   
-  
- 
-#=====================================================================================
-  #
-  #  Code chunk 2
-  #
-  #=====================================================================================
-  
-  
+    
   # Choose a set of soft-thresholding powers
   powers = c(c(1:10), seq(from = 12, to=20, by=2))
   # Call the network topology analysis function
@@ -136,16 +113,7 @@ meta_f<-meta[match(name,meta$library),]
        main = paste("Mean connectivity"))
   text(sft$fitIndices[,1], sft$fitIndices[,5], labels=powers, cex=cex1,col="red")
   
-  
-  
-  #=====================================================================================
-  #
-  #  Code chunk 3
-  #
-  #=====================================================================================
-
-  
-  
+     
   b<-50
   
   net = blockwiseModules(datExpr, power = 6,
@@ -157,54 +125,16 @@ meta_f<-meta[match(name,meta$library),]
                          verbose = 3)
   
   
-  #=====================================================================================
-  #
-  #  Code chunk 4
-  #
-  #=====================================================================================
-  
-  
-  ## open a graphics window
-  #sizeGrWindow(12, 9)
-  ## Convert labels to colors for plotting
-  #mergedColors = labels2colors(net$colors)
-  ## Plot the dendrogram and the module colors underneath
-  #plotDendroAndColors(net$dendrograms[[1]], mergedColors[net$blockGenes[[1]]],
-  #                    "Module colors",
-  #                    dendroLabels = FALSE, hang = 0.03,
-  #                    addGuide = TRUE, guideHang = 0.05)
-  
-  
-  
-  #=====================================================================================
-  #
-  #  Code chunk 5
-  #
-  #=====================================================================================
-  
   
   moduleLabels = net$colors
   moduleColors = labels2colors(net$colors)
   MEs = net$MEs;
   geneTree = net$dendrograms[[1]];
   save(MEs, moduleLabels, moduleColors, geneTree, 
-       file = paste("expr_mat/5a_WGCNA_relative/02-networkConstruction-auto_N",b,"_20230411.RData",sep=""))
+       file = paste("02-networkConstruction-auto_N",b,".RData",sep=""))
   
   modulegenecolors<-data.frame(cbind(moduleLabels,moduleColors))
   
-  
-  ####Relating modules to external clinical traits and identifying important genes
-  
-  
-# black      blue     brown     green      grey      pink       red turquoise    yellow 
-#  177      1777      1508       477      2590       133       229      2368       741 
-  
-  
-  #=====================================================================================
-  #
-  #  Code chunk 2
-  #
-  #=====================================================================================
   
   
   # Define numbers of genes and samples
@@ -216,12 +146,8 @@ meta_f<-meta[match(name,meta$library),]
   moduleTraitCor = cor(MEs, datTraits, use = "p");
   moduleTraitPvalue = corPvalueStudent(moduleTraitCor, nSamples);
   
-  save(MEs,moduleTraitCor,moduleTraitPvalue, file = paste("expr_mat/5a_WGCNA_relative/03-networkConstruction-auto_N",b,"_20230411.RData",sep=""))
+  save(MEs,moduleTraitCor,moduleTraitPvalue, file = paste("03-networkConstruction-auto_N",b,".RData",sep=""))
   
-  
-  print("networkConstruction")
-  
-  ################
   sizeGrWindow(10,6)
   # Will display correlations and their p-values
   textMatrix =  paste(signif(moduleTraitCor, 2), "\n(",
@@ -231,7 +157,7 @@ meta_f<-meta[match(name,meta$library),]
   
   
   library(RColorBrewer)
-  png(paste("chart/5a_WGCNA_relative/wgcna_labeledheatmap_N",b,"_20220808.png",sep=""),height=1280,width=800)
+  png(paste("chart/wgcna_labeledheatmap_N",b,".png",sep=""),height=1280,width=800)
   p1<-labeledHeatmap(Matrix = moduleTraitCor,
                      xLabels = names(datTraits),
                      yLabels = names(MEs),
@@ -248,15 +174,6 @@ meta_f<-meta[match(name,meta$library),]
   
   print("correlation plot")
   
-  #=====================================================================================
-  #
-  #  Code chunk 9
-  #
-  #=====================================================================================
-  
-  
-  geneinfo<-readRDS("data/geneinfo_r58395_20211210.rds")
-  
   probes = colnames(datExpr)
   probes2annot = match(probes, geneinfo$Gene_ID)
   # The following is the number or probes without annotation:
@@ -269,12 +186,7 @@ meta_f<-meta[match(name,meta$library),]
                         moduleColor = moduleColors)
   
   geneInfo$moduleID<-as.numeric(as.factor(geneInfo$moduleColor))
-  
-  saveRDS(geneInfo,paste("expr_mat/5a_WGCNA_relative/WGCNA_geneInfo_modules_N",b,"_20230411.rds",sep=""))
-  
-  
-  ####gene_info
-  
+    
   ##############
   moduleTraitCor<-data.frame(moduleTraitCor)
   moduleTraitCor$N<-""
@@ -285,8 +197,7 @@ meta_f<-meta[match(name,meta$library),]
     moduleTraitCor$N[i]<-length(which(geneInfo$moduleColor==col))
   }
   
-  saveRDS(moduleTraitCor,paste("expr_mat/5a_WGCNA_relative/moduleTraitCor_N",b,"_20230411.rds",sep=""))
-  
+  saveRDS(moduleTraitCor,paste("moduleTraitCor_N",b,".rds",sep=""))
   
   
   
@@ -295,11 +206,6 @@ meta_f<-meta[match(name,meta$library),]
   mod<-mod[order(as.numeric(as.character(mod$N)),decreasing=T),]
   
   modules<-unique(mod$color)
-  
-  
-  
-  ########PCA
-  
   
   pcs_all<-c()
   pc1comp<-c()
@@ -326,8 +232,6 @@ meta_f<-meta[match(name,meta$library),]
     pc1comp<-rbind(pc1comp,c(mod$color[i],summary(pca_prcomp)$importance[2,1]*100,summary(pca_prcomp)$importance[2,2]*100))
   }
   
-  saveRDS(pcs_all,paste("expr_mat/5a_WGCNA_relative/PCA_value_N",b,"_20230411.rds",sep=""))
-  
   
   pc1comp<-data.frame(pc1comp)
   colnames(pc1comp)<-c("modue","PC1comp","PC2comp")
@@ -335,20 +239,10 @@ meta_f<-meta[match(name,meta$library),]
   pc1comp$PC1comp<-as.numeric(as.character(pc1comp$PC1comp))
   pc1comp$PC2comp<-as.numeric(as.character(pc1comp$PC2comp))
   
-  saveRDS(pc1comp,paste("expr_mat/5a_WGCNA_relative/PCA_comp_N",b,"_20230411.rds",sep=""))
-  
-  
-#  "turquoise" "blue"  "brown"  "yellow"  "green"   "red" "black" "pink" 
- #     45        47      47       54         47      44     49      50
-  
-  head(pcs_all)
-  
   pcs_all$PC12<-sqrt(pcs_all$PC1^2+pcs_all$PC2^2)
   pcs_all_1<-pcs_all[pcs_all$module %in% modules,]
   pcs_all_1$module<-factor(pcs_all_1$module,levels=modules,ordered=T)
-  
-  
- 
+   
   
   n<-ggplot(pcs_all_1,aes(x=PC1,y=1,fill=sample))+
     geom_point(aes(fill=sample,color=sample),size=8,alpha=0.5)+
@@ -364,17 +258,7 @@ meta_f<-meta[match(name,meta$library),]
           strip.text.x = element_text())+
     facet_wrap(module~.,scales="free",ncol=1);n
   
-  
-  ggsave(paste("chart/5a_WGCNA_relative/pca_pc1_N",b,"_20230411.png",sep=""),n,width=5,height=7)
-  ggsave(paste("chart/5a_WGCNA_relative/pca_pc1_N",b,"_20230411.pdf",sep=""),n,width=5,height=7)
-  
-  print("PCA")
-  
-  
-  ##################################################
-  ##########functional analysis based on ensembl ID GO
-  ##################################################
-  
+    
   umodules<-modules
   go_enrich<-c()
   for ( i in 1:length(umodules)){
@@ -397,8 +281,4 @@ meta_f<-meta[match(name,meta$library),]
     go_enrich$geneName[i]<-pastetogether(gname)
   }
   colnames(go_enrich)[1]<-"modulecolor"
-  
-  
-  write.csv(go_enrich,paste("expr_mat/5a_WGCNA_relative/go_enrich_N",b,"_20230411.csv",sep=""))
-  
   
