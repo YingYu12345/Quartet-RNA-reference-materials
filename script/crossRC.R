@@ -5,7 +5,7 @@ source("library.R")
 logexpr<-readRDS("logFPKM.rds")
 ratioexpr<-readRDS("ratioD6.rds")
 
-meta<-readRDS("metaQ_r252.rds")
+meta<-read.csvI("meta_data.csv")
 
 ubatch<-sort(unique(as.character(meta$batch)))
 
@@ -63,5 +63,5 @@ colnames(cross_RC)<-c("datatype","compare","batch2","batch_type","N","RC")
 
 cross_RC$RC<-as.numeric(as.character(cross_RC$RC))
 
-saveRDS(cross_RC,"expr_mat/RC_cross.rds")
+saveRDS(cross_RC,"RC_cross.rds")
 
