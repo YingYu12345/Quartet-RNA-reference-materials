@@ -33,26 +33,3 @@ library(ggpointdensity)
 ### RNA-seq analysis
 library(edgeR)
 library(limma)
-
-
-#20230405
-## check version package.version ()
-
-#R.Version() ## R version 4.1.2 (2021-11-01)
-
-#> package.version("ggplot2")
-#[1] "3.3.5"
-#> package.version("pheatmap")
-#[1] "1.0.12"
-#> package.version("clusterProfiler")
-#[1] "4.2.2"
-#> package.version("edgeR")
-#[1] "3.36.0"
-#> package.version("limma")
-#[1] "3.50.0"
-#> package.version("WGCNA")
-#[1] "1.71"
-#> package.version("ggsci")
-#[1] "2.9"
-#> package.version("GGally")
-#[1] "2.1.2"
