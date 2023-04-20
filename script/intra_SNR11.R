@@ -2,13 +2,10 @@
 source("library.R")
 source("func_snrdb.R")
 
-logexpr<-readRDS("")
+logexpr<-readRDS("exprMat_log2FPKM.rds")
 
-meta<-readRDS("")
+meta<-read.csv("meta_data.csv")
 ubatch<-unique(as.character(meta$batch))
-
-expdgene<-readRDS("")
-expdgene1<-expdgene
 
 ########
 
@@ -43,6 +40,6 @@ colnames(snr_table)<-c("Batch","SNR","N","ExdLibrary")
 snr_table$SNR<-as.numeric(as.character(snr_table$SNR))
 snr_table$N<-as.numeric(as.character(snr_table$N))
 
-saveRDS(snr_table,"expr_mat/intra_SNR11.rds")
+saveRDS(snr_table,"intra_SNR11.rds")
 
 
