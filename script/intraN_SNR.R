@@ -1,18 +1,11 @@
-############################################
-######### QC  
 
-setwd("C:/Users/ingri/Documents/working/quartet/quartet_20200503/RNA/RNA_revision_20230327/")
-source("C:/Users/ingri/Documents/working/quartet/quartet_20200503/RNA/RNA_revision_20230327/script/1_preprocess/library.R")
-source("C:/Users/ingri/Documents/working/quartet/quartet_20200503/RNA/RNA_revision_20230327/script/1_preprocess/color_theme.R")
-
-source("script/func/func_snrdb_2023.R")
+source("func_snrdb.R")
 
 
 ####################import data
 
-logexpr<-readRDS("C:/Users/ingri/Documents/working/quartet/quartet_20200503/RNA/RNA_revision_20230327/expr_mat/alldetect_logFPKM_f001_r29433c252_20230407.rds")
-
-meta<-readRDS("data/metaQ_r252_20230406.rds")
+logexpr<-readRDS("exprMat_log2FPKM.rds")
+meta<-read.csv("meta_data.csv")
 
 ubatch<-unique(as.character(meta$batch))
 usample<-as.character(unique(meta$sample))
@@ -68,13 +61,5 @@ for ( i in c(2,4,5,7)){
   
 }
 
-saveRDS(snr_table,"expr_mat/6a_intraN_SNR_20230410.rds")
-
-
-
-
-
-ggplot(snr_table,aes(x=groups,y=snr,fill=n_sample))+
-  geom_boxplot()
-
+saveRDS(snr_table,"intraN_SNR.rds")
 
