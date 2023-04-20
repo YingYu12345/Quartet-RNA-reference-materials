@@ -6,26 +6,20 @@ source("color_theme.R")
 
 ####################import data
 
-logexpr
+logexpr<-readRDS("exprMat_log2FPKM.rds")
+meta<-read.csv("meta_data.csv")
+samplepair<-readRDS("samplepairs_r526.rds")
 
-meta
 
 ubatch<-unique(as.character(meta$batch))
 usample<-as.character(unique(meta$sample))
 
-samplepair<-readRDS("samplepairs_r526.rds")
 samplepair1<-samplepair[which(samplepair$n_group>1),]
 samplepair1<-samplepair1[grep("D6",samplepair1$detail),]
 
 samplepair1$detail<-as.character(samplepair1$detail)
 
 samplepair2<-samplepair1
-
-######refdata
-refexpr<-readRDS("3a_RefData_refexpr3.rds")
-
-
-
 
 intra_N_RC<-c()
 
@@ -113,5 +107,5 @@ for ( i in c(2,4,5,7)){
   
 }
 
-saveRDS(intra_N_RC,"expr_mat/6b_intraN_RC.rds")
+saveRDS(intra_N_RC,"intraN_RC.rds")
 
